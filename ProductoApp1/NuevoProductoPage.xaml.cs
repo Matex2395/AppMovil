@@ -1,16 +1,24 @@
+//using Android.Net;
 using CommunityToolkit.Maui.Core;
 using ProductoApp1.Models;
+using ProductoApp1.Services;
 
 namespace ProductoApp1;
 
 public partial class NuevoProductoPage : ContentPage
 {
     private Producto _producto;
-	public NuevoProductoPage()
+    private readonly APIService _APIService;
+    public NuevoProductoPage(APIService apiservice)
 	{
 		InitializeComponent();
-        
-	}
+        _APIService = apiservice;
+    }
+
+    public NuevoProductoPage()
+    {
+        InitializeComponent();
+    }
 
     protected override void OnAppearing()
     {
@@ -31,19 +39,23 @@ public partial class NuevoProductoPage : ContentPage
             _producto.Nombre=Nombre.Text;
             _producto.cantidad = Int32.Parse(cantidad.Text);
             _producto.Descripcion = Descripcion.Text;
+            await _APIService.PutProducto(_producto.IdProducto, _producto);
         }
         else
         {
-
-            Producto producto = new Producto
+            //int id = Utils.Utils.ListaProductos.Count + 1;
+            Producto producto = new Producto()
             {
-                IdProducto = 0,
+                //IdProducto = id,
                 Nombre = Nombre.Text,
                 Descripcion = Descripcion.Text,
                 cantidad = Int32.Parse(cantidad.Text)
             };
 
-            Utils.Utils.ListaProductos.Add(producto);
+            /*System.NullReferenceException
+              Mensaje = Object reference not set to an instance of an object.*/
+            await _APIService.PostProducto(producto);
+            //Utils.Utils.ListaProductos.Add(producto);
         }
         await Navigation.PopAsync();
 

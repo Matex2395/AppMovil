@@ -1,16 +1,19 @@
+//using Android.Net;
 using CommunityToolkit.Maui.Core;
 using ProductoApp1.Models;
+using ProductoApp1.Services;
 
 namespace ProductoApp1;
 
 public partial class DetalleProductoPage : ContentPage
 {
     private Producto _producto;
+    private readonly APIService _APIService;
 
-    public DetalleProductoPage()
+    public DetalleProductoPage(APIService apiservice)
 	{
 		InitializeComponent();
-       
+        _APIService = apiservice;
     }
 
     protected override void OnAppearing()
@@ -25,7 +28,8 @@ public partial class DetalleProductoPage : ContentPage
 
     private async void OnClickBorrar(object sender, EventArgs e)
     {
-        Utils.Utils.ListaProductos.Remove(_producto);
+        await _APIService.DeleteProducto(_producto.IdProducto);
+        //Utils.Utils.ListaProductos.Remove(_producto);
         await Navigation.PopAsync();
     }
 
@@ -34,8 +38,8 @@ public partial class DetalleProductoPage : ContentPage
         var toast = CommunityToolkit.Maui.Alerts.Toast.Make(_producto.Nombre, ToastDuration.Short, 14);
 
         await toast.Show();
-        await Navigation.PushAsync(new NuevoProductoPage() { 
-            BindingContext = _producto,
+        await Navigation.PushAsync(new NuevoProductoPage(_APIService) { 
+            BindingContext = _producto
        });
     }
 
